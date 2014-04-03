@@ -1,12 +1,12 @@
 # Try4J
 
-Try4J is a Java 8 implementation of Scala's Try, Success, and Failure.
+Try4J is a Java 8 implementation of Scala's `Try`, `Success`, and `Failure`.
 
-Try4J allows you to write lambda expressions that throw exceptions in a compact and fluent fashion rather than having to enclose it in a bulky `try-catch` block. The result of a successful operation is wrapped in a `Success`. The exception thrown in a failed operation is wrapped in a `Failure`. You can filter or map based on whether the operation was a success or failure.
+Try4J allows you to write lambda expressions that throw exceptions in a compact and fluent fashion rather than having to enclose it in a bulky `try-catch` block. The result of a successful operation is wrapped in a `Success`. The exception thrown in a failed operation is wrapped in a `Failure`. Filter or map based on whether the operation is a success or a failure.
 
 ## Usage
 
-Wrap functional style code that may throw an exception in a `Try` so that you can deal with the exception in a more functional manner.
+Wrap functional style code that may throw an exception in a `Try` to deal with the exception in a more functional manner.
 
 The following code filters out the divide-by-zero case and keeps only the valid results:
 
@@ -40,7 +40,7 @@ List<String> results = denominators.stream()
 
 ## Examples
 
-Let's say that you need a list of network adapters that are active and support multicast. Because many of the `NetworkInterface` operations throw a `SocketException`, you have to wrap your functional style code in bulky `try-catch` blocks:
+Let's say that you need a list of network adapters that are active and support multicast. Because many of the `NetworkInterface` operations throw a `SocketException`, you have to wrap them in bulky `try-catch` blocks, cluttering up your nice, clean functional code:
 
 ```java
 try {
@@ -62,15 +62,15 @@ try {
 }
 ```
 
-But with Try4J, you can wrap those calls in a `Try` and handle them in a concise functional style:
+But with Try4J, you can wrap those calls in a `Try` and get rid of those noisy `try-catch` blocks:
 
 ```java
-    List<NetworkInterface> nics = 
-        Try.to(() -> Collections.list(NetworkInterface.getNetworkInterfaces()))
-        .orElse(new ArrayList<>())
-        .stream()
-        .filter(n -> Try.to(() -> n.supportsMulticast() && n.isUp()).orElse(false))
-        .collect(Collectors.toList());
-    
-    // do something with nics
+List<NetworkInterface> nics = 
+    Try.to(() -> Collections.list(NetworkInterface.getNetworkInterfaces()))
+    .orElse(new ArrayList<>())
+    .stream()
+    .filter(n -> Try.to(() -> n.supportsMulticast() && n.isUp()).orElse(false))
+    .collect(Collectors.toList());
+
+// do something with nics
 ```
