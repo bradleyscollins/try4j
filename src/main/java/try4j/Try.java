@@ -94,7 +94,7 @@ public interface Try<T> {
    *    {@link Try} failed with (if a {@link Failure}) or an 
    *    UnsupportedOperationException (if a {@link Success}).
    */
-  Try<Throwable> failed();
+  Try<Exception> failed();
 
   /**
    * Returns the value from this {@link Try} if it is a {@link Success} or
@@ -164,7 +164,7 @@ public interface Try<T> {
    * @return the result of {@code s} if this is a {@link Success}, or the result
    *    of {@code f} otherwise
    */
-  <U> Try<U> transform(Function<? super T, Try<U>> s, Function<Throwable, Try<U>> f);
+  <U> Try<U> transform(Function<? super T, Try<U>> s, Function<Exception, Try<U>> f);
 
   /**
    * Converts this to a {@link Failure} if the predicate is not satisfied.
@@ -216,4 +216,8 @@ public interface Try<T> {
    *    {@link Failure}.
    */
   <U> Try<U> map(Function<? super T, ? extends U> mapper);
+
+  Try<? super T> recover(Function<Exception, ? super T> rescue);
+
+  Try<? super T> recoverWith(Function<Exception, Try<? super T>> rescue);
 }

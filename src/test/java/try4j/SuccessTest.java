@@ -92,7 +92,7 @@ public class SuccessTest {
   @Test
   public void transformAppliesSToEncapsulatedValue() {
     Function<String, Try<Integer>> s = x -> Success.of(x.length());
-    Function<Throwable, Try<Integer>> f = x -> Success.of(-1);
+    Function<Exception, Try<Integer>> f = x -> Success.of(-1);
 
     assertThat(success.transform(s, f), 
         is(Success.of(success.get().length())));
@@ -137,6 +137,18 @@ public class SuccessTest {
   public void mapReturnsSuccessInstanceContainingMappedValue() {
     assertThat(success.map(s -> s.length()),
         is(Success.of(success.get().length())));
+  }
+  
+  @Test
+  public void recoverReturnsSameSuccessInstance() {
+    assertThat(success.recover(t -> t.getMessage()),
+        is(sameInstance(success)));
+  }
+  
+  @Test
+  public void recoverWithReturnsSameSuccessInstance() {
+    assertThat(success.recoverWith(t -> Success.of(t.getMessage())),
+        is(sameInstance(success)));
   }
 
   @Test

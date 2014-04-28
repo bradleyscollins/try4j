@@ -24,20 +24,20 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public final class Failure<T> implements Try<T> {
-  private final Throwable exception;
+  private final Exception exception;
 
-  public Failure(Throwable t) {
-    this.exception = Objects.requireNonNull(t,
+  public Failure(Exception e) {
+    this.exception = Objects.requireNonNull(e,
         "Success must be initialized with a non-null value");
   }
   
-  public static <U> Failure<U> of(Throwable t) {
-    return new Failure<>(t);
+  public static <U> Failure<U> of(Exception e) {
+    return new Failure<>(e);
   }
 
-  public Throwable getException() { return exception; }
+  public Exception getException() { return exception; }
 
-  @Override public Try<Throwable> failed() { return Success.of(exception); }
+  @Override public Try<Exception> failed() { return Success.of(exception); }
 
   @Override public T get() { throw new RuntimeException(exception); }
 
@@ -54,7 +54,7 @@ public final class Failure<T> implements Try<T> {
   @Override public Optional<T> toOptional() { return Optional.<T>empty(); }
 
   @Override
-  public <U> Try<U> transform(Function<? super T, Try<U>> s, Function<Throwable, Try<U>> f) {
+  public <U> Try<U> transform(Function<? super T, Try<U>> s, Function<Exception, Try<U>> f) {
     try {
       return f.apply(exception);
     } catch (Exception e) {
@@ -62,9 +62,7 @@ public final class Failure<T> implements Try<T> {
     }
   }
 
-  @Override public Try<T> filter(Predicate<T> predicate) {
-    return this;
-  }
+  @Override public Try<T> filter(Predicate<T> predicate) { return this; }
 
   @Override public <U> Try<U> flatMap(Function<? super T, Try<U>> mapper) {
     @SuppressWarnings("unchecked")
@@ -86,10 +84,29 @@ public final class Failure<T> implements Try<T> {
     return ret;
   }
 
+  @Override
+  public Try<? super T> recover(Function<Exception, ? super T> rescue) {
+    try {
+      return Success.of(rescue.apply(exception));
+    } catch (Exception e) {
+      return Failure.of(e);
+    }
+  }
+
+  @Override
+  public Try<? super T> recoverWith(Function<Exception, Try<? super T>> rescue) {
+    try {
+      return rescue.apply(exception);
+    } catch (Exception e) {
+      return Failure.of(e);
+    }
+  }
+
   @Override public boolean equals(Object obj) {
     if (obj == null) return false;
     if (obj == this) return true;
     if ( !(obj instanceof Failure) ) return false;
+    @SuppressWarnings("rawtypes")
     Failure<?> other = (Failure) obj;
     return Objects.equals(exception, other.exception);
   }

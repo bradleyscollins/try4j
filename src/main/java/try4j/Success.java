@@ -39,7 +39,7 @@ public final class Success<T> implements Try<T> {
   public T getValue() { return value; }
 
   @Override
-  public Try<Throwable> failed() {
+  public Try<Exception> failed() {
     return Success.of(new UnsupportedOperationException("Success.failed"));
   }
 
@@ -58,7 +58,7 @@ public final class Success<T> implements Try<T> {
   @Override public Optional<T> toOptional() { return Optional.of(value); }
 
   @Override
-  public <U> Try<U> transform(Function<? super T, Try<U>> s, Function<Throwable, Try<U>> f) {
+  public <U> Try<U> transform(Function<? super T, Try<U>> s, Function<Exception, Try<U>> f) {
     try {
       return s.apply(value);
     } catch (Exception e) {
@@ -105,11 +105,22 @@ public final class Success<T> implements Try<T> {
   @Override public <U> Try<U> map(Function<? super T, ? extends U> mapper) {
     return Try.to(() -> mapper.apply(value));
   }
+  
+  @Override
+  public Try<? super T> recover(Function<Exception, ? super T> rescue) {
+    return this;
+  }
+
+  @Override
+  public Try<? super T> recoverWith(Function<Exception, Try<? super T>> rescue) {
+    return this;
+  }
 
   @Override public boolean equals(Object obj) {
     if (obj == null) return false;
     if (obj == this) return true;
     if ( !(obj instanceof Success) ) return false;
+    @SuppressWarnings("rawtypes")
     Success<?> other = (Success) obj;
     return Objects.equals(value, other.value);
   }

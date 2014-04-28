@@ -51,8 +51,8 @@ public class FailureTest {
   
   @Test
   public void ofConstructsFailureInstanceWithGivenThrowable() {
-    Throwable throwable = failure.getException();
-    assertThat(failure, is(Failure.of(throwable)));
+    Exception ex = failure.getException();
+    assertThat(failure, is(Failure.of(ex)));
   }
 
   @Test
@@ -94,7 +94,7 @@ public class FailureTest {
   @Test
   public void transformAppliesFToEncapsulatedException() {
     Function<String, Try<Integer>> s = x -> Success.of(x.length());
-    Function<Throwable, Try<Integer>> f = x -> Success.of(-1);
+    Function<Exception, Try<Integer>> f = x -> Success.of(-1);
 
     assertThat(failure.transform(s, f), is(Success.of(-1)));
   }
@@ -126,6 +126,36 @@ public class FailureTest {
   @Test
   public void mapReturnsSameFailureInstance() {
     assertThat(failure.map(s -> s.length()), is(sameInstance(failure)));
+  }
+
+  @Test
+  public void recoverReturnsTransformedFailure() {
+    assertThat(failure.recover(t -> t.getMessage()),
+        is(Success.of(failure.getException().getMessage())));
+  }
+  
+  @Test
+  public void recoverHandlesExceptionInRescueFunction() {
+    Try<? super String> actual = failure.recover(e -> {
+      throw new RuntimeException("failure");
+    });
+    
+    assertThat(actual.failed().get().getMessage(), is("failure"));
+  }
+  
+  @Test
+  public void recoverWithReturnsTransformedFailure() {
+    assertThat(failure.recoverWith(t -> Success.of(t.getMessage())),
+        is(Success.of(failure.getException().getMessage())));
+  }
+
+  @Test
+  public void recoverWithHandlesExceptionInRescueFunction() {
+    Try<? super String> actual = failure.recoverWith(e -> {
+      throw new RuntimeException("failure");
+    });
+    
+    assertThat(actual.failed().get().getMessage(), is("failure"));
   }
 
   @Test
