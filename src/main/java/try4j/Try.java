@@ -220,7 +220,6 @@ public interface Try<T> {
   /**
    * Applies the given function if this is a {@link Failure}, otherwise returns
    * this if this is a {@link Success}.
-   * @param <T> the type of the {@link Try} returned from this operation
    * @param rescue the mapping function applied to the encapsulated exception
    *    if this is a {@link Failure}
    * @return The result of invoking the given function on the encapsulated value
@@ -232,7 +231,6 @@ public interface Try<T> {
   /**
    * Applies the given function if this is a {@link Failure}, otherwise returns
    * this if this is a {@link Success}.
-   * @param <T> the type of the {@link Try} returned from this operation
    * @param rescue the mapping function applied to the encapsulated exception
    *    if this is a {@link Failure}
    * @return The result of invoking the given function on the encapsulated value
