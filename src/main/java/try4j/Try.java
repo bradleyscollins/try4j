@@ -209,15 +209,35 @@ public interface Try<T> {
    * Invokes the given function on the encapsulated value if this is a
    * {@link Success}, or returns this instance if this is a {@link Failure}.
    * @param <U> the type of the {@link Try} returned from this operation
-   * @param mapper the mapping function applied to the encapsulate value if this
+   * @param mapper the mapping function applied to the encapsulated value if this
    *    is a {@link Success}
    * @return The result of invoking the given function on the encapsulated value
    *    if this is a {@link Success}, or returns this instance if this is a
    *    {@link Failure}.
    */
   <U> Try<U> map(Function<? super T, ? extends U> mapper);
-
+  
+  /**
+   * Applies the given function if this is a {@link Failure}, otherwise returns
+   * this if this is a {@link Success}.
+   * @param <T> the type of the {@link Try} returned from this operation
+   * @param rescue the mapping function applied to the encapsulated exception
+   *    if this is a {@link Failure}
+   * @return The result of invoking the given function on the encapsulated value
+   *    if this is a {@link Failure}, or returns this instance if this is a
+   *    {@link Success}.
+   */
   Try<? super T> recover(Function<Exception, ? super T> rescue);
 
+  /**
+   * Applies the given function if this is a {@link Failure}, otherwise returns
+   * this if this is a {@link Success}.
+   * @param <T> the type of the {@link Try} returned from this operation
+   * @param rescue the mapping function applied to the encapsulated exception
+   *    if this is a {@link Failure}
+   * @return The result of invoking the given function on the encapsulated value
+   *    if this is a {@link Failure}, or returns this instance if this is a
+   *    {@link Success}.
+   */
   Try<? super T> recoverWith(Function<Exception, Try<? super T>> rescue);
 }
