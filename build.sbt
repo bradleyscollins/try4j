@@ -4,6 +4,10 @@ organization := "bradleyscollins"
 
 description := "Functional exception handling for Java 8"
 
+homepage := Some(url("https://github.com/bradleyscollins/try4j"))
+
+licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+
 
 javacOptions := Seq(
   "-source", "1.8",
@@ -24,5 +28,5 @@ autoScalaLibrary := false
 
 libraryDependencies ++= Seq(
   "org.hamcrest" % "hamcrest-all" % "1.3",
-  "com.novocode" % "junit-interface" % "0.10" % "test"
+  "com.novocode" % "junit-interface" % "0.11" % "test"
 )
