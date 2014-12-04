@@ -10,5 +10,5 @@
 
 /build
 
-/lib/*-sources.jar
-/lib/*-javadoc.jar
+# sbt specific
+target/
