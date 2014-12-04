@@ -1,6 +1,6 @@
-name := "try4j"
+name := "Try4J"
 
-organization := "bradleyscollins"
+organization := "try4j"
 
 description := "Functional exception handling for Java 8"
 
