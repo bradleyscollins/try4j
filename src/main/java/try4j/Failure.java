@@ -16,12 +16,13 @@
 
 package try4j;
 
+import try4j.function.ThrowingFunction;
+import try4j.function.ThrowingSupplier;
+
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public final class Failure<T> implements Try<T> {
   private final Exception exception;
@@ -31,9 +32,7 @@ public final class Failure<T> implements Try<T> {
         "Success must be initialized with a non-null value");
   }
   
-  public static <U> Failure<U> of(Exception e) {
-    return new Failure<>(e);
-  }
+  public static <U> Failure<U> of(Exception e) { return new Failure<>(e); }
 
   public Exception getException() { return exception; }
 
@@ -44,8 +43,12 @@ public final class Failure<T> implements Try<T> {
   @Override public T orElse(T instead) { return instead; }
 
   @Override
-  public Try<? super T> orElseGet(Supplier<Try<? super T>> instead) {
-    return instead.get();
+  public Try<? super T> orElseTry(ThrowingSupplier<Try<? super T>> instead) {
+    try {
+      return instead.get();
+    } catch (Exception e) {
+      return Failure.of(e);
+    }
   }
 
   @Override public boolean isFailure() { return true; }
@@ -54,7 +57,8 @@ public final class Failure<T> implements Try<T> {
   @Override public Optional<T> toOptional() { return Optional.<T>empty(); }
 
   @Override
-  public <U> Try<U> transform(Function<? super T, Try<U>> s, Function<Exception, Try<U>> f) {
+  public <U> Try<U> transform(ThrowingFunction<? super T, Try<U>> s,
+                              ThrowingFunction<Exception, Try<U>> f) {
     try {
       return f.apply(exception);
     } catch (Exception e) {
@@ -64,7 +68,7 @@ public final class Failure<T> implements Try<T> {
 
   @Override public Try<T> filter(Predicate<T> predicate) { return this; }
 
-  @Override public <U> Try<U> flatMap(Function<? super T, Try<U>> mapper) {
+  @Override public <U> Try<U> flatMap(ThrowingFunction<? super T, Try<U>> mapper) {
     @SuppressWarnings("unchecked")
     Try<U> ret = (Try<U>) this;
     return ret;
@@ -78,14 +82,14 @@ public final class Failure<T> implements Try<T> {
 
   @Override public void forEach(Consumer<? super T> action) { }
 
-  @Override public <U> Try<U> map(Function<? super T, ? extends U> mapper) {
+  @Override public <U> Try<U> map(ThrowingFunction<? super T, ? extends U> mapper) {
     @SuppressWarnings("unchecked")
     Try<U> ret = (Try<U>) this;
     return ret;
   }
 
   @Override
-  public Try<? super T> recover(Function<Exception, ? super T> rescue) {
+  public Try<? super T> recover(ThrowingFunction<Exception, ? super T> rescue) {
     try {
       return Success.of(rescue.apply(exception));
     } catch (Exception e) {
@@ -94,7 +98,7 @@ public final class Failure<T> implements Try<T> {
   }
 
   @Override
-  public Try<? super T> recoverWith(Function<Exception, Try<? super T>> rescue) {
+  public Try<? super T> recoverWith(ThrowingFunction<Exception, Try<? super T>> rescue) {
     try {
       return rescue.apply(exception);
     } catch (Exception e) {

@@ -30,10 +30,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import try4j.Failure;
-import try4j.Success;
-import try4j.Try;
+import try4j.function.ThrowingFunction;
 
 public class FailureTest {
 
@@ -72,7 +69,7 @@ public class FailureTest {
 
   @Test
   public void orElseGetYieldsTryInstanceGeneratedByGivenSupplier() {
-    assertThat(failure.orElseGet(() -> Success.of("default")),
+    assertThat(failure.orElseTry(() -> Success.of("default")),
         is(Success.of("default")));
   }
 
@@ -93,8 +90,8 @@ public class FailureTest {
 
   @Test
   public void transformAppliesFToEncapsulatedException() {
-    Function<String, Try<Integer>> s = x -> Success.of(x.length());
-    Function<Exception, Try<Integer>> f = x -> Success.of(-1);
+    ThrowingFunction<String, Try<Integer>> s = x -> Success.of(x.length());
+    ThrowingFunction<Exception, Try<Integer>> f = x -> Success.of(-1);
 
     assertThat(failure.transform(s, f), is(Success.of(-1)));
   }

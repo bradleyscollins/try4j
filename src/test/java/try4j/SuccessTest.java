@@ -25,10 +25,8 @@ import java.util.function.Function;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import try4j.function.ThrowingFunction;
 
-import try4j.Failure;
-import try4j.Success;
-import try4j.Try;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -70,7 +68,7 @@ public class SuccessTest {
 
   @Test
   public void orElseGetReturnsSameSuccessInstance() {
-    assertThat(success.orElseGet(() -> Success.of("default")),
+    assertThat(success.orElseTry(() -> Success.of("default")),
         is(sameInstance(success)));
   }
 
@@ -91,8 +89,8 @@ public class SuccessTest {
 
   @Test
   public void transformAppliesSToEncapsulatedValue() {
-    Function<String, Try<Integer>> s = x -> Success.of(x.length());
-    Function<Exception, Try<Integer>> f = x -> Success.of(-1);
+    ThrowingFunction<String, Try<Integer>> s = x -> Success.of(x.length());
+    ThrowingFunction<Exception, Try<Integer>> f = x -> Success.of(-1);
 
     assertThat(success.transform(s, f), 
         is(Success.of(success.get().length())));

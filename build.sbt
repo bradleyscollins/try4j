@@ -30,3 +30,16 @@ libraryDependencies ++= Seq(
   "org.hamcrest" % "hamcrest-all" % "1.3",
   "com.novocode" % "junit-interface" % "0.11" % "test"
 )
+
+// Bintray
+seq(bintraySettings:_*)
+
+// sbt-release
+releaseSettings
+
+// sbt-github-release
+GithubRelease.defaults
+
+GithubRelease.repo := "bradleyscollins/try4j"
+
+GithubRelease.draft := true

@@ -16,6 +16,9 @@
 
 package try4j;
 
+import try4j.function.ThrowingFunction;
+import try4j.function.ThrowingSupplier;
+
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
@@ -25,19 +28,19 @@ import java.util.function.Supplier;
 
 /**
  * {@link Try} represents a computation that may either result in an exception
- * or return a successfully computed value. It is inspired by the Scala's
+ * or return a successfully computed value. It is inspired by Scala's
  * <a href="http://www.scala-lang.org/api/2.10.3/#scala.util.Try">Try</a>.
- * 
- * An instance of {@link Try<T>} is either an instance of {@link Success} or
+ * <p>
+ * An instance of {@code Try<T>} is either an instance of {@link Success} or
  * {@link Failure}.
- * 
+ * <p>
  * For example, {@link Try} can be used to perform division on a user-defined
  * input, without the need to do explicit exception-handling in all of the
  * places that an exception might occur.
- * 
+ * <p>
  * Example:
  * 
- * <pre>
+ * <pre>{@code
  * public class UserInput {
  *   public static void main(String[] args) {
  *     Try<Integer> quotient = divide();
@@ -63,10 +66,10 @@ import java.util.function.Supplier;
  *     }
  *   }
  * }
- * </pre>
+ * }</pre>
  * 
- * @author Brad Collins
  * @param <T> the type of element contained in a successful computation
+ * @author Brad Collins
  */
 public interface Try<T> {
   /**
@@ -74,15 +77,15 @@ public interface Try<T> {
    * {@link Success} or a {@link Failure}.
    * @param <U> they type of element returned by {@code callable} if
    *    successful
-   * @param callable the operation to be evaluated, which may throw an exception
+   * @param supplier the operation to be evaluated, which may throw an exception
    * @return a {@link Success} containing the return value of {@code callable} if
    *    {@code callable} completes without throwing an exception, or a
    *    {@link Failure} containing the exception {@code callable} throws if
    *    unsuccessful.
    */
-  public static <U> Try<U> to(Callable<U> callable) {
+  public static <U> Try<U> to(ThrowingSupplier<U> supplier) {
     try {
-      return Success.of(callable.call());
+      return Success.of(supplier.get());
     } catch (Exception e) {
       return Failure.of(e);
     }
@@ -117,14 +120,23 @@ public interface Try<T> {
    * Returns the value from this {@link Try} if it is a {@link Success} or the
    * {@link Try} supplied by the given {@link Supplier} if it is a
    * {@link Failure}.
-   * 
-   * <strong>Note</strong>: This throws an exception if it is a {@link Failure},
-   * and {@code instead} throws an exception. 
+   * <p>
+   * If {@code instead} throws an exception, this returns a  {@link Failure}.
+   *
    * @param instead the supplier to invoke if this is a {@link Failure}
    * @return if a {@link Success}, the encapsulated value; if a {@link Failure},
    *    the {@link Try} that {@code instead} produces.
+   * @since 1.6.0
    */
-  Try<? super T> orElseGet(Supplier<Try<? super T>> instead);
+  Try<? super T> orElseTry(ThrowingSupplier<Try<? super T>> instead);
+
+  /**
+   * @deprecated As of 1.6.0. Use {@link #orElseTry} instead.
+   */
+  @Deprecated
+  default Try<? super T> orElseGet(ThrowingSupplier<Try<? super T>> instead) {
+    return orElseTry(instead);
+  }
 
   /**
    * Returns {@code true} if this {@link Try} is a {@link Success}, or
@@ -156,6 +168,10 @@ public interface Try<T> {
    * Completes this {@link Try} by invoking {@code f} on the encapsulated
    * exception this if this is a {@link Failure}, or conversely, by invoking
    * {@code s} on the encapsulated value if this is a {@link Success}.
+   * <p>
+   * If either {@code s} or {@code f} throws an exception, this returns a
+   * {@link Failure}.
+   *
    * @param <U> the type of the new {@link Try} that this operation returns
    * @param s the function invoked on the encapsulated value if this is a
    *    {@link Success}
@@ -164,7 +180,8 @@ public interface Try<T> {
    * @return the result of {@code s} if this is a {@link Success}, or the result
    *    of {@code f} otherwise
    */
-  <U> Try<U> transform(Function<? super T, Try<U>> s, Function<Exception, Try<U>> f);
+  <U> Try<U> transform(ThrowingFunction<? super T, Try<U>> s,
+                       ThrowingFunction<Exception, Try<U>> f);
 
   /**
    * Converts this to a {@link Failure} if the predicate is not satisfied.
@@ -179,21 +196,23 @@ public interface Try<T> {
   /**
    * Returns the given function applied to the value from this {@link Try} if it
    * is a {@link Success}, or returns this instance if it is a {@link Failure}.
+   * <p>
+   * If {@code mapper} throws an exception, this returns a {@link Failure}.
+   *
    * @param <U> the type of the new {@link Try} that {@code mapper} returns
    * @param mapper invoked on the value in this {@link Try}
    * @return if this is a {@link Success}, a new {@link Try} resulting from the
    *    the invocation of {@code mapper} to the encapsulated value; otherwise,
    *    this instance.
    */
-  <U> Try<U> flatMap(Function<? super T, Try<U>> mapper);
+  <U> Try<U> flatMap(ThrowingFunction<? super T, Try<U>> mapper);
 
   /**
-   * Transforms a nested {@link Try}, i.e., a {@link Try} of type
-   * {@link Try<Try<T>>}, into an un-nested {@link Try}, i.e., a {@link Try} of
-   * type {@link Try<T>}.
+   * Transforms a nested {@link Try} into an un-nested {@link Try}, i.e., a
+   * {@code Try<Try<T>>} into a {@code Try<T>}.
    * @param <U> type of value encapsulated in new {@link Try} resulting from
    *    this operation
-   * @return 
+   * @return an un-nested version of this {@link Try}
    */
   <U extends Try<?>> Try<U> flatten();
 
@@ -208,6 +227,9 @@ public interface Try<T> {
   /**
    * Invokes the given function on the encapsulated value if this is a
    * {@link Success}, or returns this instance if this is a {@link Failure}.
+   * <p>
+   * If {@code mapper} throws an exception, this returns a {@link Failure}.
+   *
    * @param <U> the type of the {@link Try} returned from this operation
    * @param mapper the mapping function applied to the encapsulated value if this
    *    is a {@link Success}
@@ -215,27 +237,33 @@ public interface Try<T> {
    *    if this is a {@link Success}, or returns this instance if this is a
    *    {@link Failure}.
    */
-  <U> Try<U> map(Function<? super T, ? extends U> mapper);
+  <U> Try<U> map(ThrowingFunction<? super T, ? extends U> mapper);
   
   /**
    * Applies the given function if this is a {@link Failure}, otherwise returns
    * this if this is a {@link Success}.
+   * <p>
+   * If {@code rescue} throws an exception, this returns a {@link Failure}.
+   *
    * @param rescue the mapping function applied to the encapsulated exception
    *    if this is a {@link Failure}
    * @return The result of invoking the given function on the encapsulated value
    *    if this is a {@link Failure}, or returns this instance if this is a
    *    {@link Success}.
    */
-  Try<? super T> recover(Function<Exception, ? super T> rescue);
+  Try<? super T> recover(ThrowingFunction<Exception, ? super T> rescue);
 
   /**
    * Applies the given function if this is a {@link Failure}, otherwise returns
    * this if this is a {@link Success}.
+   * <p>
+   * If {@code rescue} throws an exception, this returns a {@link Failure}.
+   *
    * @param rescue the mapping function applied to the encapsulated exception
    *    if this is a {@link Failure}
    * @return The result of invoking the given function on the encapsulated value
    *    if this is a {@link Failure}, or returns this instance if this is a
    *    {@link Success}.
    */
-  Try<? super T> recoverWith(Function<Exception, Try<? super T>> rescue);
+  Try<? super T> recoverWith(ThrowingFunction<Exception, Try<? super T>> rescue);
 }

@@ -16,13 +16,14 @@
 
 package try4j;
 
+import try4j.function.ThrowingFunction;
+import try4j.function.ThrowingSupplier;
+
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public final class Success<T> implements Try<T> {
   private final T value;
@@ -48,7 +49,7 @@ public final class Success<T> implements Try<T> {
   @Override public T orElse(T instead) { return get(); }
 
   @Override
-  public Try<? super T> orElseGet(Supplier<Try<? super T>> instead) {
+  public Try<? super T> orElseTry(ThrowingSupplier<Try<? super T>> instead) {
     return this;
   }
 
@@ -58,7 +59,8 @@ public final class Success<T> implements Try<T> {
   @Override public Optional<T> toOptional() { return Optional.of(value); }
 
   @Override
-  public <U> Try<U> transform(Function<? super T, Try<U>> s, Function<Exception, Try<U>> f) {
+  public <U> Try<U> transform(ThrowingFunction<? super T, Try<U>> s,
+                              ThrowingFunction<Exception, Try<U>> f) {
     try {
       return s.apply(value);
     } catch (Exception e) {
@@ -79,7 +81,7 @@ public final class Success<T> implements Try<T> {
     }
   }
 
-  @Override public <U> Try<U> flatMap(Function<? super T, Try<U>> mapper) {
+  @Override public <U> Try<U> flatMap(ThrowingFunction<? super T, Try<U>> mapper) {
     try {
       return mapper.apply(value);
     } catch (Exception e) {
@@ -102,17 +104,17 @@ public final class Success<T> implements Try<T> {
     action.accept(value);
   }
 
-  @Override public <U> Try<U> map(Function<? super T, ? extends U> mapper) {
+  @Override public <U> Try<U> map(ThrowingFunction<? super T, ? extends U> mapper) {
     return Try.to(() -> mapper.apply(value));
   }
   
   @Override
-  public Try<? super T> recover(Function<Exception, ? super T> rescue) {
+  public Try<? super T> recover(ThrowingFunction<Exception, ? super T> rescue) {
     return this;
   }
 
   @Override
-  public Try<? super T> recoverWith(Function<Exception, Try<? super T>> rescue) {
+  public Try<? super T> recoverWith(ThrowingFunction<Exception, Try<? super T>> rescue) {
     return this;
   }
 

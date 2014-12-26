@@ -5,6 +5,7 @@
 /RemoteSystemsTempFiles
 /*.classpath
 /*.project
+/.idea
 /.settings
 /bin
 
