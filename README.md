@@ -74,3 +74,9 @@ List<NetworkInterface> nics =
 
 // do something with nics
 ```
+
+## Contributors
+
+Thanks to Daniel Gronau for some suggestions for improving the API. Thanks to
+[Alexey Alekhin](https://github.com/laughedelic) for some automated release
+features.

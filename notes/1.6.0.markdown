@@ -1,0 +1,7 @@
+- Deprecated  `orElseGet` in favor of `orElseTry`.
+- Filled in some missing holes in the Javadocs.
+- Made some API improvements, thanks to some suggestions from Daniel
+Gronau.
+- Added some automated release features, thanks to Alexey
+Alekhin (https://github.com/laughedelic).
+
