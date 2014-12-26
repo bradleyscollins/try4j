@@ -28,15 +28,32 @@ import java.util.function.Predicate;
 public final class Success<T> implements Try<T> {
   private final T value;
 
+  /**
+   * Creates a new {@link try4j.Success} containing {@code value}.
+   * @param value value representing a successful operation
+   * @throws java.lang.NullPointerException if {@code value} is {@code null}
+   */
   public Success(T value) {
     this.value = Objects.requireNonNull(value,
         "Success must be initialized with a non-null value");
   }
-  
+
+  /**
+   * Creates a new {@link try4j.Success} containing {@code value}.
+   * <p>
+   * Named constructor for syntactic sugar.
+   * @param value represents a successful operation
+   * @param <U> type of {@code value}
+   * @return a new {@link try4j.Success} containing {@code value}.
+   */
   public static <U> Success<U> of(U value) {
     return new Success<>(value);
   }
 
+  /**
+   * Returns the value this {@link try4j.Success} contains.
+   * @return the value this {@link try4j.Success} contains.
+   */
   public T getValue() { return value; }
 
   @Override

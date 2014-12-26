@@ -27,13 +27,30 @@ import java.util.function.Predicate;
 public final class Failure<T> implements Try<T> {
   private final Exception exception;
 
+  /**
+   * Creates a new {@link try4j.Failure} containing the exception {@code e}.
+   * @param e exception representing a failed operation
+   * @throws java.lang.NullPointerException if {@code e} is {@code null}
+   */
   public Failure(Exception e) {
     this.exception = Objects.requireNonNull(e,
         "Success must be initialized with a non-null value");
   }
-  
+
+  /**
+   * Creates a new {@link try4j.Failure} containing the exception {@code e}.
+   * <p>
+   * Named constructor for syntactic sugar.
+   * @param e exception representing a failed operation
+   * @param <U> type of {@link try4j.Try} this {@link try4j.Failure} represents
+   * @return a new {@link try4j.Failure} containing the exception {@code e}.
+   */
   public static <U> Failure<U> of(Exception e) { return new Failure<>(e); }
 
+  /**
+   * Returns the exception this {@link try4j.Failure} contains.
+   * @return the exception this {@link try4j.Failure} contains.
+   */
   public Exception getException() { return exception; }
 
   @Override public Try<Exception> failed() { return Success.of(exception); }
