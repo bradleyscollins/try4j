@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
 )
 
 // Bintray
-seq(bintraySettings:_*)
+bintraySettings
 
 // sbt-release
 releaseSettings
