@@ -223,7 +223,7 @@ public interface Try<T> {
    *    if this is a {@link Success}
    */
   void forEach(Consumer<? super T> action);
-tyasks
+
   /**
    * Invokes the given function on the encapsulated value if this is a
    * {@link Success}, or returns this instance if this is a {@link Failure}.
