@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Bradley S. Collins.
+ * Copyright 2015 Bradley S. Collins.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,11 @@
 package try4j;
 
 import try4j.function.ThrowingFunction;
+import try4j.function.ThrowingPredicate;
 import try4j.function.ThrowingSupplier;
 
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * {@link Try} represents a computation that may either result in an exception
@@ -118,10 +115,10 @@ public interface Try<T> {
 
   /**
    * Returns the value from this {@link Try} if it is a {@link Success} or the
-   * {@link Try} supplied by the given {@link Supplier} if it is a
+   * {@link Try} supplied by the given {@link ThrowingSupplier} if it is a
    * {@link Failure}.
    * <p>
-   * If {@code instead} throws an exception, this returns a  {@link Failure}.
+   * If {@code instead} throws an exception, this returns a {@link Failure}.
    *
    * @param instead the supplier to invoke if this is a {@link Failure}
    * @return if a {@link Success}, the encapsulated value; if a {@link Failure},
@@ -185,13 +182,16 @@ public interface Try<T> {
 
   /**
    * Converts this to a {@link Failure} if the predicate is not satisfied.
+   * <p>
+   * If {@code predicate} throws an exception, this returns a {@link Failure}.
+   *
    * @param predicate the test applied to the encapsulated value if this is a
    *    {@link Success}
    * @return this instance if this is already a {@link Failure}, or if this is a
    *    {@link Success} that holds for the given {@code predicate}; otherwise a
    *    new {@link Failure}
    */
-  Try<T> filter(Predicate<T> predicate);
+  Try<T> filter(ThrowingPredicate<T> predicate);
 
   /**
    * Returns the given function applied to the value from this {@link Try} if it
@@ -223,7 +223,7 @@ public interface Try<T> {
    *    if this is a {@link Success}
    */
   void forEach(Consumer<? super T> action);
-
+tyasks
   /**
    * Invokes the given function on the encapsulated value if this is a
    * {@link Success}, or returns this instance if this is a {@link Failure}.

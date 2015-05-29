@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Bradley S. Collins.
+ * Copyright 2015 Bradley S. Collins.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 package try4j;
 
 import try4j.function.ThrowingFunction;
+import try4j.function.ThrowingPredicate;
 import try4j.function.ThrowingSupplier;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public final class Failure<T> implements Try<T> {
   private final Exception exception;
@@ -83,7 +83,7 @@ public final class Failure<T> implements Try<T> {
     }
   }
 
-  @Override public Try<T> filter(Predicate<T> predicate) { return this; }
+  @Override public Try<T> filter(ThrowingPredicate<T> predicate) { return this; }
 
   @Override public <U> Try<U> flatMap(ThrowingFunction<? super T, Try<U>> mapper) {
     @SuppressWarnings("unchecked")

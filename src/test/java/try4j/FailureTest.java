@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Bradley S. Collins.
+ * Copyright 2015 Bradley S. Collins.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,17 +74,23 @@ public class FailureTest {
   }
 
   @Test
+  public void orElseTryYieldsFailureIfSupplierThrowsAnException() {
+    assertThat(failure.orElseTry(() -> { throw new Exception(); }),
+        is(instanceOf(Failure.class)));
+  }
+
+  @Test
   public void isFailureReturnsTrue() {
     assertThat(failure.isFailure(), is(true));
   }
 
   @Test
-  public void testIsSuccess() {
+  public void isSuccessReturnsFalse() {
     assertThat(failure.isSuccess(), is(false));
   }
 
   @Test
-  public void toOptionalReturnsOptionalContainingEncapsulatedValue() {
+  public void toOptionalReturnsEmpty() {
     assertThat(failure.toOptional(), is(Optional.empty()));
   }
 
@@ -97,14 +103,25 @@ public class FailureTest {
   }
 
   @Test
+  public void transformReturnsFailureIfFThrowsAnException() {
+    ThrowingFunction<String, Try<Integer>> s = x -> Success.of(x.length());
+    ThrowingFunction<Exception, Try<Integer>> f = x -> { throw new Exception(); };
+
+    assertThat(failure.transform(s, f), is(instanceOf(Failure.class)));
+  }
+
+  @Test
   public void filterReturnsSameFailureInstanceRegardlessOfPredicate() {
     assertThat(failure.filter(s -> true), is(failure));
     assertThat(failure.filter(s -> false), is(failure));
+    assertThat(failure.filter(s -> { throw new Exception(); }), is(failure));
   }
 
   @Test
   public void flatMapReturnsSameFailureInstance() {
     assertThat(failure.flatMap(s -> Try.to(() -> s.length())),
+        is(sameInstance(failure)));
+    assertThat(failure.flatMap(s -> { throw new Exception(); }),
         is(sameInstance(failure)));
   }
 
@@ -123,6 +140,8 @@ public class FailureTest {
   @Test
   public void mapReturnsSameFailureInstance() {
     assertThat(failure.map(s -> s.length()), is(sameInstance(failure)));
+    assertThat(failure.map(s -> { throw new Exception(); }),
+        is(sameInstance(failure)));
   }
 
   @Test
@@ -130,7 +149,7 @@ public class FailureTest {
     assertThat(failure.recover(t -> t.getMessage()),
         is(Success.of(failure.getException().getMessage())));
   }
-  
+
   @Test
   public void recoverHandlesExceptionInRescueFunction() {
     Try<? super String> actual = failure.recover(e -> {

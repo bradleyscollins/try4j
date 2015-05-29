@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Bradley S. Collins.
+ * Copyright 2015 Bradley S. Collins.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public interface ThrowingFunction<T, R> {
    * @param t the function argument
    * @return the function result
    */
-  R apply(T t);
+  R apply(T t) throws Exception;
 
   /**
    * Returns a composed function that first applies the {@code before}

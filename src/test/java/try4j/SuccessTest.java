@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 Bradley S. Collins.
+ * Copyright 2015 Bradley S. Collins.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.function.Function;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sun.reflect.annotation.ExceptionProxy;
 import try4j.function.ThrowingFunction;
 
 import static org.hamcrest.Matchers.*;
@@ -67,8 +68,10 @@ public class SuccessTest {
   }
 
   @Test
-  public void orElseGetReturnsSameSuccessInstance() {
+  public void orElseTryReturnsSameSuccessInstance() {
     assertThat(success.orElseTry(() -> Success.of("default")),
+        is(sameInstance(success)));
+    assertThat(success.orElseTry(() -> { throw new Exception(); }),
         is(sameInstance(success)));
   }
 
@@ -92,8 +95,16 @@ public class SuccessTest {
     ThrowingFunction<String, Try<Integer>> s = x -> Success.of(x.length());
     ThrowingFunction<Exception, Try<Integer>> f = x -> Success.of(-1);
 
-    assertThat(success.transform(s, f), 
+    assertThat(success.transform(s, f),
         is(Success.of(success.get().length())));
+  }
+
+  @Test
+  public void transformReturnsFailureIfSThrowsException() {
+    ThrowingFunction<String, Try<Integer>> s = x -> { throw new Exception(); };
+    ThrowingFunction<Exception, Try<Integer>> f = x -> Success.of(-1);
+
+    assertThat(success.transform(s, f), is(instanceOf(Failure.class)));
   }
 
   @Test
@@ -108,9 +119,21 @@ public class SuccessTest {
   }
 
   @Test
+  public void filterReturnsAFailureIfInputPredicateThrowsAnException() {
+    assertThat(success.filter(s -> { throw new Exception(); }),
+        is(instanceOf(Failure.class)));
+  }
+
+  @Test
   public void flatMapReturnsSuccessWithMapperAppliedToEncapsulatedValue() {
     assertThat(success.flatMap(s -> Try.to(() -> s.length())),
         is(Success.of(success.get().length())));
+  }
+
+  @Test
+  public void flatMapReturnsFailureIfMapperThrowsAnException() {
+    assertThat(success.flatMap(s -> { throw new Exception(); }),
+        is(instanceOf(Failure.class)));
   }
 
   @Test
@@ -136,16 +159,26 @@ public class SuccessTest {
     assertThat(success.map(s -> s.length()),
         is(Success.of(success.get().length())));
   }
-  
+
+  @Test
+  public void mapReturnsFailureIfMapperThrowsAnException() {
+    assertThat(success.map(s -> { throw new Exception(); }),
+        is(instanceOf(Failure.class)));
+  }
+
   @Test
   public void recoverReturnsSameSuccessInstance() {
     assertThat(success.recover(t -> t.getMessage()),
         is(sameInstance(success)));
+    assertThat(success.recover(t -> { throw new Exception(); }),
+        is(sameInstance(success)));
   }
-  
+
   @Test
   public void recoverWithReturnsSameSuccessInstance() {
     assertThat(success.recoverWith(t -> Success.of(t.getMessage())),
+        is(sameInstance(success)));
+    assertThat(success.recoverWith(t -> { throw new Exception(); }),
         is(sameInstance(success)));
   }
 

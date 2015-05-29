@@ -1,0 +1,10 @@
+- Updated copyright statement year to 2015.
+- Added ThrowingPredicate.
+- Changed Try#filter(Predicate) to Try#filter(ThrowingPredicate) so that it can
+  accept predicates that may throw exceptions and modified Failure and Success
+  implementations to match.
+- Corrected signature of ThrowingFunction#apply(T) so that it includes a throws
+  clause.
+- Updated/added several tests so that they explicitly exercise the cases in
+  which functions, predicates, and suppliers throw exceptions.
+- Corrected some erroneous test names.
