@@ -22,6 +22,7 @@ import try4j.function.ThrowingSupplier;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * {@link Try} represents a computation that may either result in an exception
@@ -115,6 +116,17 @@ public interface Try<T> {
 
   /**
    * Returns the value from this {@link Try} if it is a {@link Success} or the
+   * value returned by the given supplier default argument if it is a
+   * {@link Failure}.
+   * @param instead supplies the return value if this is a {@link Failure}
+   * @return if a {@link Success}, the encapsulated value; if a {@link Failure},
+   *    {@code instead}'s return value
+   * @since 1.8.1
+   */
+  T orElse(Supplier<T> instead);
+
+  /**
+   * Returns the value from this {@link Try} if it is a {@link Success} or the
    * {@link Try} supplied by the given {@link ThrowingSupplier} if it is a
    * {@link Failure}.
    * <p>
@@ -129,6 +141,9 @@ public interface Try<T> {
 
   /**
    * @deprecated As of 1.6.0. Use {@link #orElseTry} instead.
+   * @param instead the supplier to invoke if this is a {@link Failure}
+   * @return if a {@link Success}, the encapsulated value; if a {@link Failure},
+   *    the {@link Try} that {@code instead} produces.
    */
   @Deprecated
   default Try<? super T> orElseGet(ThrowingSupplier<Try<? super T>> instead) {

@@ -23,6 +23,7 @@ import try4j.function.ThrowingSupplier;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public final class Failure<T> implements Try<T> {
   private final Exception exception;
@@ -58,6 +59,8 @@ public final class Failure<T> implements Try<T> {
   @Override public T get() { throw new RuntimeException(exception); }
 
   @Override public T orElse(T instead) { return instead; }
+
+  @Override public T orElse(Supplier<T> instead) { return instead.get(); }
 
   @Override
   public Try<? super T> orElseTry(ThrowingSupplier<Try<? super T>> instead) {

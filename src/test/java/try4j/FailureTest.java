@@ -68,6 +68,11 @@ public class FailureTest {
   }
 
   @Test
+  public void orElseYieldsSuppliedDefaultValue() {
+    assertThat(failure.orElse(() -> "default"), is("default"));
+  }
+
+  @Test
   public void orElseGetYieldsTryInstanceGeneratedByGivenSupplier() {
     assertThat(failure.orElseTry(() -> Success.of("default")),
         is(Success.of("default")));

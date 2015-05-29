@@ -65,6 +65,7 @@ public class SuccessTest {
   @Test
   public void orElseReturnsEncapsulatedValue() {
     assertThat(success.orElse("default"), is("Success"));
+    assertThat(success.orElse(() -> "default"), is("Success"));
   }
 
   @Test

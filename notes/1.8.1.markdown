@@ -1,0 +1,3 @@
+- Added Try#orElse(Supplier), associated implementations in Success and
+  Failure, and associated tests.
+- Corrected some Javadoc omissions.

@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public final class Success<T> implements Try<T> {
   private final T value;
@@ -64,6 +65,8 @@ public final class Success<T> implements Try<T> {
   @Override public T get() { return value; }
 
   @Override public T orElse(T instead) { return get(); }
+
+  @Override public T orElse(Supplier<T> instead) { return getValue(); }
 
   @Override
   public Try<? super T> orElseTry(ThrowingSupplier<Try<? super T>> instead) {
