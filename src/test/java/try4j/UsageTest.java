@@ -26,9 +26,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import try4j.Success;
-import try4j.Try;
-
 public class UsageTest {
   @Test
   public void dropDivideByZero() {

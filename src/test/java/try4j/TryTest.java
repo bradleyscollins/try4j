@@ -21,9 +21,6 @@ import java.net.URISyntaxException;
 
 import org.junit.Test;
 
-import try4j.Failure;
-import try4j.Success;
-import try4j.Try;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 

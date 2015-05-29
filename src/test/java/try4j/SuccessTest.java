@@ -20,12 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import sun.reflect.annotation.ExceptionProxy;
 import try4j.function.ThrowingFunction;
 
 import static org.hamcrest.Matchers.*;
