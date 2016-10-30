@@ -1,3 +1,7 @@
+# _DEPRECATED_
+
+This project is **deprecated**. There will be **no** further updates. For a more current library with a number additional features, try [Javaslang](http://www.javaslang.io/).
+
 # Try4J
 
 Try4J is a Java 8 implementation of the Try monad based on [Scala's](http://www.scala-lang.org) [`Try`](http://www.scala-lang.org/api/current/#scala.util.Try), [`Success`](http://www.scala-lang.org/api/current/#scala.util.Success), and [`Failure`](http://www.scala-lang.org/api/current/#scala.util.Failure).
